@@ -1,0 +1,242 @@
+#main{
+    color: var(--purple-color);
+    position: relative;
+    top: 100px;
+    width: 90vw;
+    height: 100vh;
+    /* background-color: red; */
+    gap:10px;
+    margin-bottom: 500px;
+}
+
+
+#marketstatus{
+    font-size: 0.8rem;
+    text-align: center;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    /* background-color: rgb(0, 0, 0); */
+    width: 100%;
+    height:80px;
+}
+
+
+#usmarket,#indianmarket{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 40%;
+    height: 100%;
+    background-color: var(--green-color);
+    border: 2px solid var(--purple-color);
+    color:var(--purple-color);
+    border-radius: 20px;
+    box-shadow: 10px 10px 10px rgba(0, 0, 0, 0.146);
+}
+
+#maindisplay{
+    width: 100%;
+    height: fit-content;
+    background-color: var(--white-color);
+    border-radius: 20px;
+    box-shadow: 10px 10px 10px rgba(0, 0, 0, 0.146);
+    margin-top: 10px;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 100px;
+}
+
+
+#yourportfolio{
+    display: flex;
+    text-align: center;
+    color: var(--purple-color);
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin: 50px;
+}
+
+#analytics{
+    width: 100%;
+    height: 35%;
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    gap: 10px;
+    
+}
+
+#totalvaluecard{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 20px;
+
+    width: 40%;
+    height: 100%;
+    background-color: var(--purple-color);
+    border-radius: 20px;
+    box-shadow: 10px 10px 10px rgba(0, 0, 0, 0.146);
+    color: var(--white-color);
+}
+
+#valuecardsecone{
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    width: 100%;
+    height: 100%;
+    font-size: 0.5rem;
+}
+
+#invested,#currentvalue{
+    padding: 10px;
+    min-width: 40%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    width: fit-content;
+    height: 50%;
+    background-color: var(--white-color);
+    border-radius: 20px;
+    box-shadow: 10px 10px 10px rgba(0, 0, 0, 0.146);
+    color: var(--purple-color);
+    margin: 10px;
+    overflow: hidden;
+}
+
+#invested p,#currentvalue p{
+    font-size: 1.8rem;
+    font-weight: 600;
+}
+
+#yourreturns{
+    width: 90%;
+    padding: 10px;
+    margin: 10px;
+    border-radius: 20px;
+    box-shadow: 10px 10px 10px rgba(0, 0, 0, 0.146);
+    color: var(--purple-color);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    background-color: var(--white-color);
+}
+
+#yourreturns h1{
+    padding: 0px;
+    margin: 0px;
+    font-size: 1.2rem;
+    font-weight: 600;
+}
+
+#yourreturns p{
+    font-size: 1.8rem;
+    font-weight: 800;
+}
+
+#linechartcard {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 20px;
+    width: 40%;
+    height: 100%;
+    background-color: var(--purple-color);
+    border-radius: 20px;
+    box-shadow: 10px 10px 10px rgba(0, 0, 0, 0.146);
+    color: var(--white-color);
+}
+
+#linechartcard h1 {
+    font-size: 1.2rem;
+    margin-bottom: 10px;
+}
+
+#chart {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 90%;
+    height: 100%;
+    background-color: var(--white-color);
+    border-radius: 15px;
+    padding: 15px;
+}
+
+/* Recharts Custom Styling */
+.recharts-wrapper {
+    font-family: inherit;
+}
+
+.recharts-tooltip-wrapper {
+    background-color: var(--white-color) !important;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.recharts-tooltip-item {
+    color: var(--purple-color) !important;
+}
+
+.recharts-cartesian-grid-horizontal line,
+.recharts-cartesian-grid-vertical line {
+    stroke: rgba(0, 0, 0, 0.1);
+}
+
+.recharts-xAxis .recharts-cartesian-axis-tick-value,
+.recharts-yAxis .recharts-cartesian-axis-tick-value {
+    fill: var(--purple-color);
+    font-size: 10px;
+}
+
+#footerr{
+    position: relative;
+    margin-top: 110vh;
+    bottom:0px;
+    background-color: var(--purple-color);
+    color: var(--white-color);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.8rem;
+    margin-bottom: 10px;
+
+}
+
+#footerr a{
+    color: var(--white-color);
+    text-decoration: none;
+    position: relative;
+}
+
+#footerr a::before{
+    content: "";
+    position: absolute;
+    bottom: 0px;
+    height: 2px;
+    background-color: white;
+    width: 0px;
+    transition: width 0.3s ease;
+}
+
+#footerr a:hover::before{
+    width: 100%;
+}
+
+
+
+
+
+
+
+

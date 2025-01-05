@@ -1,0 +1,14 @@
+{
+    "configurations": [
+        {
+            "type": "java",
+            "name": "Spring Boot-AmalgamPortfolioTrackerApplication<portfoliotracker>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "com.amalgam.portfoliotracker.AmalgamPortfolioTrackerApplication",
+            "projectName": "portfoliotracker",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env"
+        }
+    ]
+}
