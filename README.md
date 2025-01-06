@@ -69,7 +69,13 @@ Amalgam Portfolio Tracker is a comprehensive web application designed to help us
 - Use the dashboard to add stocks and view your portfolio's performance.
 - Access the Help Center for any questions or support.
 
-## Assumptions and Limitations
+## Live API Documentation
+
+The Amalgam Portfolio Tracker provides live API documentation using Swagger UI. You can access the documentation at the following URL:
+
+- **Swagger UI**: [http://localhost:8080/swagger-ui.html](http://localhost:8080/swagger-ui.html)
+
+This interface allows you to explore the available API endpoints, view request/response models, and test the API directly from your browser.
 
 ### Assumptions
 
@@ -87,7 +93,7 @@ Amalgam Portfolio Tracker is a comprehensive web application designed to help us
 
 1. **API Rate Limiting**: The application is subject to the rate limits imposed by the Finnhub API (60 calls per minute for the free tier), which may affect the frequency of data updates.
 
-2. **Limited Market Coverage**: The application currently supports only Indian and US stock markets. Other global markets are not included in the current implementation.
+2. **Limited Market Coverage**: The application currently supports only US stock markets. Other global markets are not included in the current implementation.
 
 3. **No Real-time Streaming**: The application does not support real-time price streaming; it relies on periodic API calls to fetch the latest stock prices.
 
@@ -95,18 +101,26 @@ Amalgam Portfolio Tracker is a comprehensive web application designed to help us
 
 5. **Limited Historical Data**: The application does not provide extensive historical data analysis or visualization features, which may limit users' ability to perform in-depth portfolio analysis.
 
-6. **Single Database Setup**: The application uses a single MySQL database instance, which may not scale well with a large number of users or high data volume.
-
-7. **Error Handling**: The application has basic error handling, but it may not cover all edge cases, leading to potential crashes or unhandled exceptions.
-
-8. **User Interface**: The user interface is designed for desktop use and may not be fully responsive on mobile devices.
-
-9. **No Support for Other Assets**: The application currently focuses solely on stocks and does not support other asset classes such as cryptocurrencies or bonds.
-
-10. **Performance Limitations**: The application may experience performance issues with large datasets or high user traffic due to the lack of caching mechanisms and optimization strategies.
+6. **No Support for Other Assets**: The application currently focuses solely on stocks and does not support other asset classes such as cryptocurrencies or bonds.
 
 These assumptions and limitations should be considered when using the Amalgam Portfolio Tracker application, and users are encouraged to provide feedback for future improvements.
 
+## Future Plans
+
+1. **User Authentication**:
+   - Implement secure OAuth-based authentication to allow users to log in using their existing accounts from platforms like Google or Facebook.
+
+2. **Real-time Price Updates**:
+   - Integrate WebSocket support for live stock price updates, allowing users to monitor their portfolios in real-time.
+
+3. **Expanded Market Coverage**:
+   - Add support for Indian stock markets and cryptocurrencies to provide users with a wider range of investment options.
+
+4. **Advanced Analytics**:
+   - Introduce features for portfolio diversification analysis and risk assessment to help users make informed investment decisions.
+
+5. **Mobile Application Development**:
+   - Develop a mobile version of the Amalgam Portfolio Tracker to enhance accessibility and user experience on mobile devices.
 
 ## Contributing
 
