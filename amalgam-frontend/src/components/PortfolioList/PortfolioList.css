@@ -298,3 +298,20 @@ input{
     color: red;
     border: 2px solid red;
 }
+
+@media (max-width:768px){
+
+    #yourinvestments{
+        font-size: 3.5rem;
+        font-weight: 700;
+    }
+
+    #refreshportfolio{
+        width: 90%;
+    }
+
+
+    #stocklist{
+        width: 90%;
+    }
+}

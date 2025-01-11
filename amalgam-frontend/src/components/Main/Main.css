@@ -233,10 +233,46 @@
     width: 100%;
 }
 
+@media (max-width:768px){
+    #main{
+        height: 100svh;
+        width: 100%;
+        top: 400px;
+    }
+
+    #marketstatus{
+        flex-direction: column;
+        height: 40%;
+        gap:10px;
+    }
+
+    #usmarket,#indianmarket{
+        width: 90%;
+        font-size: 1.2rem;
+    }
 
 
 
+    #yourportfolio{
+        font-size: 2.2rem;
+        font-weight: 700;
+        margin:10px;
+    }
 
+    #analytics{
+        flex-direction: column;
+    }
 
+    #totalvaluecard{
+        width: 90%;
+    }   
 
+    #linechartcard{
+        width: 90%;
+    }
 
+    #footerr{
+        display:none;
+    }
+
+}

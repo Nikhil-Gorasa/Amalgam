@@ -8,7 +8,15 @@ function PortfolioList({ onPortfolioUpdate }){
     const [search, setSearch] = useState('');
     const [buyQuantity, setBuyQuantity] = useState('');
     const [buyPrice, setBuyPrice] = useState('');
-    const [stockList, setStockList] = useState([]);
+    const [stockList, setStockList] = useState([
+    //     {
+    //     id: 'example',
+    //     search: 'AAPL',
+    //     companyName: 'Apple Inc.',
+    //     buyQuantity: 10,
+    //     buyPrice: 175.50
+    // }
+]);
     
     const [marketPrices, setMarketPrices] = useState({});
     const [searchSuggestions, setSearchSuggestions] = useState([]);
@@ -315,7 +323,7 @@ function PortfolioList({ onPortfolioUpdate }){
     return(
         <>
             <h1 id="yourinvestments">Your Investments ({stockList.length})</h1>
-            <button id="refreshportfolio" onClick={refreshPrices}>⟳</button>
+            <button id="refreshportfolio" onClick={refreshPrices}>Refresh Positions ⟳</button>
             <div id="addinvestment">
                 <div id="addinvestmentbar">
                     <div className="search-container">

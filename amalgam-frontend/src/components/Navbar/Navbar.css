@@ -9,7 +9,7 @@ a{text-decoration: none;}
 
 #nav{
     background: rgba(0, 0, 0, 0.877);
-    width: 100%;
+    min-width:100svh;
     height: 80px;
     color: white;
     position: absolute;
@@ -19,6 +19,7 @@ a{text-decoration: none;}
     display: flex;
     align-items: center;
     justify-content: space-between;
+    width:100%;
 }
 
 #navlinks{
@@ -128,4 +129,22 @@ a{text-decoration: none;}
     bottom: 0;
     background-color: rgba(0, 0, 0, 0.5);
     z-index: 999;
+}
+
+@media (max-width: 768px) {
+
+    #nav{
+        justify-content: center;
+        height:150px;
+    }
+
+    #navlinks{
+        display: none;
+    }
+
+    #logoset{
+        margin-left:-15px;
+        transform : scale(1.5);
+    }
+
 }
