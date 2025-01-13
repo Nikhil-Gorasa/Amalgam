@@ -212,6 +212,60 @@ input{
     font-weight: 800;
 }
 
+#stocklist-head{
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap:10px;
+}
+
+#top-performer{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    font-size:1.5rem;
+    height:50px;
+    background:var(--green-color);
+    width:100%;
+    border-radius: 10px;
+}
+
+#askapi,#askapi-hidden{
+    display: flex;
+    align-items: center;
+    justify-content: center;  
+    background-color: var(--lightpurple-color); 
+    border-radius: 10px;
+}
+
+#askapi-hidden{
+
+    font-size: 30px;
+    border-radius: 10px;
+    height: 50px;
+    aspect-ratio: 1/1;
+    text-shadow: 10px 10px 10px rgba(0, 0, 0, 0.146);
+    display:flex;
+}
+
+#askapi input{
+    font-size:15px;
+    font-family: monospace;
+    width:400px;
+    height:10px;
+    margin:10px;
+}
+
+#askapi button,#askapi-hidden button{
+    font-size:30px;
+    background:transparent;
+    padding-bottom:5px;
+    cursor:pointer;
+}
+
 
 
 #stocknumber{

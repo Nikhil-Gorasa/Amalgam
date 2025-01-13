@@ -6,6 +6,8 @@ import PropTypes from 'prop-types';
 function PortfolioList({ onPortfolioUpdate }){
 
     const [search, setSearch] = useState('');
+    const [apiKey, setApiKey] = useState('');
+    const [apiopen,setApiOpen] = useState('false');
     const [buyQuantity, setBuyQuantity] = useState('');
     const [buyPrice, setBuyPrice] = useState('');
     const [stockList, setStockList] = useState([
@@ -21,6 +23,15 @@ function PortfolioList({ onPortfolioUpdate }){
     const [marketPrices, setMarketPrices] = useState({});
     const [searchSuggestions, setSearchSuggestions] = useState([]);
     const [selectedCompanyName, setSelectedCompanyName] = useState('');
+
+    function handleApiKey(e){
+        setApiKey(e.target.value);
+    }
+
+    function ToggleApiOpen(){
+        setApiOpen(!apiopen);
+    }
+
 
     // const fetchMarketPriceAlphaVantage = async (symbol) => {
     //     console.log('Fetching price from Alpha Vantage:', symbol);
@@ -68,6 +79,8 @@ function PortfolioList({ onPortfolioUpdate }){
     //         }));
     //     }
     // };
+
+
 
     const fetchMarketPrice = async (symbol, retryCount = 0) => {
         // Strip any exchange suffixes (like .MX)
@@ -365,6 +378,22 @@ function PortfolioList({ onPortfolioUpdate }){
             </div>
 
             <div id="stocklist">
+                <div id="stocklist-head">
+                    <div id="top-performer">
+                        <p>TOP PERFORMER : INFOSYS (INFY)</p>
+                    </div>    
+                    
+                    {apiopen && <div id="askapi-hidden"><button onClick={ToggleApiOpen}>⚙️</button></div>}
+                    {!apiopen &&
+                    <div id="askapi">
+                        <input type="text" placeholder='ctt0ephr01qin3c10ro0ctt0ephr01qin3c10rog' onChange={handleApiKey} value={apiKey}/>
+                        <button onClick={ToggleApiOpen}>✅</button>
+                    </div>
+                    }
+                    
+
+                </div>
+                
                 {stockList.length==0 && <div id="firsttime">
                     <h1>No investments yet!</h1> <br />
                     <h5>Add your first investment to get started!</h5>
