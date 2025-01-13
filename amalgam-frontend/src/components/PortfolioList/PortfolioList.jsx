@@ -180,7 +180,7 @@ function PortfolioList({ onPortfolioUpdate }){
             const selectedSuggestion = searchSuggestions.find(s => s.symbol === search.toUpperCase());
             
             // Save to backend
-            await axios.post('http://localhost:8080/api/stocks', {
+            const response = await axios.post('http://localhost:8080/api/stocks', {
                 userId: user.id,
                 name: selectedCompanyName || selectedSuggestion?.description || search.toUpperCase(),
                 ticker: search.toUpperCase(),
@@ -188,8 +188,9 @@ function PortfolioList({ onPortfolioUpdate }){
                 buyPrice: Number(buyPrice)
             });
 
-            // Update frontend state
+            // Update frontend state with the ID from the response
             const newStock = {
+                id: response.data.id,
                 search: search.toUpperCase(),
                 companyName: selectedCompanyName || selectedSuggestion?.description || search.toUpperCase(),
                 buyQuantity: Number(buyQuantity),
