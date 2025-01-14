@@ -22,4 +22,17 @@ public class UserService {
         }
         return userRepository.save(user);
     }
+
+    public void saveFinnhubKey(Long userId, String apiKey) {
+        User user = userRepository.findById(userId)
+            .orElseThrow(() -> new RuntimeException("User not found"));
+        user.setFinnhubApiKey(apiKey);
+        userRepository.save(user);
+    }
+
+    public String getFinnhubKey(Long userId) {
+        User user = userRepository.findById(userId)
+            .orElseThrow(() -> new RuntimeException("User not found"));
+        return user.getFinnhubApiKey();
+    }
 } 

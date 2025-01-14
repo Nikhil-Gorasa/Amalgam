@@ -8,6 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Map;
+
 @RestController
 @RequestMapping("/api/users")
 @CrossOrigin(origins = "http://localhost:5173")
@@ -36,6 +38,27 @@ public class UserController {
             return ResponseEntity.ok(savedUser);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    @PostMapping("/{userId}/finnhub-key")
+    public ResponseEntity<?> saveFinnhubKey(@PathVariable Long userId, @RequestBody Map<String, String> body) {
+        try {
+            String apiKey = body.get("finnhubKey");
+            userService.saveFinnhubKey(userId, apiKey);
+            return ResponseEntity.ok().build();
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Error saving API key: " + e.getMessage());
+        }
+    }
+
+    @GetMapping("/{userId}/finnhub-key")
+    public ResponseEntity<?> getFinnhubKey(@PathVariable Long userId) {
+        try {
+            String apiKey = userService.getFinnhubKey(userId);
+            return ResponseEntity.ok(Map.of("finnhubKey", apiKey));
+        } catch (Exception e) {
+            return ResponseEntity.notFound().build();
         }
     }
 } 

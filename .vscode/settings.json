@@ -18,5 +18,6 @@
     ],
     "[html]": {
         "editor.defaultFormatter": "esbenp.prettier-vscode"
-    }
+    },
+    "java.compile.nullAnalysis.mode": "disabled"
 }

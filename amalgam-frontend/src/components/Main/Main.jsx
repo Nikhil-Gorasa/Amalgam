@@ -2,9 +2,7 @@ import React,{useState,useEffect} from 'react';
 import './Main.css';
 import Navbar from '../Navbar/Navbar.jsx';
 import Footer from '../Footer/Footer.jsx';
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
-import TradingViewWidget from '../TradingViewWidget/TradingViewWidget.jsx';
-import PortfolioList from '../PortfolioList/PortfolioList.jsx';
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';import PortfolioList from '../PortfolioList/PortfolioList.jsx';
 
 function Main(){
     const [indianmarketStatus,setIndianMarketStatus] = useState(true);
@@ -21,7 +19,8 @@ function Main(){
             date.setDate(date.getDate() - i);
             last7Days.push({
                 date: date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
-                value: 0
+                value: 0,
+                timestamp: date.getTime()
             });
         }
         return last7Days;
@@ -65,17 +64,30 @@ function Main(){
     }, []);
 
     useEffect(() => {
-        if (portfolioData.totalCurrentValue !== '0.00') {
-            setChartData(prevData => {
-                const newData = [...prevData.slice(1)]; // Remove oldest point
+        // Update chart data whenever portfolio value changes, including when it's 0
+        const now = new Date();
+        const todayStr = now.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+        
+        setChartData(prevData => {
+            const todayExists = prevData.find(item => item.date === todayStr);
+            
+            if (todayExists) {
+                return prevData.map(item => 
+                    item.date === todayStr 
+                        ? { ...item, value: parseFloat(portfolioData.totalCurrentValue) }
+                        : item
+                );
+            } else {
+                const newData = [...prevData.slice(1)];
                 newData.push({
-                    date: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
-                    value: parseFloat(portfolioData.totalCurrentValue)
+                    date: todayStr,
+                    value: parseFloat(portfolioData.totalCurrentValue),
+                    timestamp: now.getTime()
                 });
                 return newData;
-            });
-        }
-    }, [portfolioData.totalCurrentValue]);
+            }
+        });
+    }, [portfolioData.totalCurrentValue]); // This will now trigger even when value is "0.00"
 
     const handlePortfolioUpdate = (data) => {
         setPortfolioData(data);

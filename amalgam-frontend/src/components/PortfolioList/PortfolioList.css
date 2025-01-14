@@ -226,37 +226,62 @@ input{
     align-items: center;
     justify-content: center;
     font-weight: 600;
-    font-size:1.5rem;
-    height:50px;
-    background:var(--green-color);
-    width:100%;
+    font-size: 1.5rem;
+    height: 30px;
+    width: 100%;
     border-radius: 10px;
+    transition: all 0.3s ease;
+    padding: 10px;
+    text-align: center;
 }
 
-#askapi,#askapi-hidden{
+#top-performer p {
+    margin: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+#top-performer.warning {
+    background-color: var(--red-color);
+    color: white;
+}
+
+#askapi, #askapi-hidden {
     display: flex;
     align-items: center;
     justify-content: center;  
     background-color: var(--lightpurple-color); 
     border-radius: 10px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    position: relative;
 }
 
-#askapi-hidden{
+#askapi {
+    width: 60%; /* Adjust based on your needs */
+}
 
-    font-size: 30px;
-    border-radius: 10px;
+#askapi-hidden {
+    width: 50px;
     height: 50px;
-    aspect-ratio: 1/1;
-    text-shadow: 10px 10px 10px rgba(0, 0, 0, 0.146);
-    display:flex;
 }
 
-#askapi input{
-    font-size:15px;
-    font-family: monospace;
-    width:400px;
+#askapi input {
+    width: 100%;
+    border-radius:5px;
     height:10px;
-    margin:10px;
+    margin:0px 10px 0px 10px;
+    opacity: 1;
+    transition: opacity 0.3s ease;
+}
+
+.settings-icon {
+    transition: transform 0.3s ease;
+}
+
+.settings-icon.rotate {
+    transform: rotate(180deg);
 }
 
 #askapi button,#askapi-hidden button{
@@ -308,12 +333,32 @@ input{
     font-size: 1.1rem;
     border-radius: 10px;
     cursor: pointer;
-    transition: 0.3s;
+    transition: all 0.3s ease;
     box-shadow: 10px 10px 10px rgba(0, 0, 0, 0.146);
 }
 
 #refreshportfolio:hover{
     background-color: var(--lightpurple-color);
+}
+
+#refreshportfolio.refreshing {
+    background-color: var(--lightpurple-color);
+    pointer-events: none;
+}
+
+#refreshportfolio.refreshing::after {
+    content: '⟳';
+    display: inline-block;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
 }
 
 .search-container {

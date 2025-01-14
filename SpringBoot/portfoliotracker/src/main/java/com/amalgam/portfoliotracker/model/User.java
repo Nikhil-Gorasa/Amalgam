@@ -6,6 +6,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.Data;
+import jakarta.persistence.Column;
 
 @Entity
 @Table(name = "users")
@@ -17,4 +18,6 @@ public class User {
     private String username;
     private String email;
     private String password;
+    @Column(name = "finnhub_api_key")
+    private String finnhubApiKey;
 } 

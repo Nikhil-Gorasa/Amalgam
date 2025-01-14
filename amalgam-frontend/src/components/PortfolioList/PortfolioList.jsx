@@ -23,99 +23,106 @@ function PortfolioList({ onPortfolioUpdate }){
     const [marketPrices, setMarketPrices] = useState({});
     const [searchSuggestions, setSearchSuggestions] = useState([]);
     const [selectedCompanyName, setSelectedCompanyName] = useState('');
+    const [userApiKey, setUserApiKey] = useState('');
+    const [isApiKeyValid, setIsApiKeyValid] = useState(false);
+    const [isUsingFallbackKey, setIsUsingFallbackKey] = useState(true);
+    const [isApiValid, setIsApiValid] = useState(false);
+    const [apiKeyStatus, setApiKeyStatus] = useState('');
+    const [isRefreshing, setIsRefreshing] = useState(false);
 
     function handleApiKey(e){
         setApiKey(e.target.value);
     }
 
+    async function handleApiKeySave() {
+        try {
+            // First validate the key with Finnhub
+            const testResponse = await axios.get(`https://finnhub.io/api/v1/quote?symbol=AAPL&token=${apiKey}`);
+            
+            if (testResponse.data && testResponse.data.c) {
+                // Key is valid, save it
+                const user = JSON.parse(localStorage.getItem('user'));
+                await axios.post(`http://localhost:8080/api/users/${user.id}/finnhub-key`, {
+                    finnhubKey: apiKey
+                });
+                
+                setUserApiKey(apiKey);
+                setIsUsingFallbackKey(false);
+                setIsApiValid(true);
+                setApiKeyStatus('valid');
+                setApiOpen(true);
+                alert('API key validated and saved successfully!');
+                
+                // Refresh prices with new key
+                stockList.forEach(stock => {
+                    fetchMarketPrice(stock.search);
+                });
+            }
+        } catch (error) {
+            console.error('API Key validation error:', error);
+            setIsApiValid(false);
+            setApiKeyStatus('invalid');
+            if (error.response?.status === 403) {
+                alert('Invalid API key! Please check your Finnhub API key.');
+            } else {
+                alert('Error validating API key. Please try again.');
+            }
+        }
+    }
+
+    // Load saved API key on component mount
+    useEffect(() => {
+        async function loadApiKey() {
+            try {
+                const user = JSON.parse(localStorage.getItem('user'));
+                const response = await axios.get(`http://localhost:8080/api/users/${user.id}/finnhub-key`);
+                if (response.data.finnhubKey) {
+                    setUserApiKey(response.data.finnhubKey);
+                    setApiKey(response.data.finnhubKey);
+                }
+            } catch (error) {
+                console.error('Error loading API key:', error);
+            }
+        }
+        loadApiKey();
+    }, []);
+
     function ToggleApiOpen(){
         setApiOpen(!apiopen);
     }
 
-
-    // const fetchMarketPriceAlphaVantage = async (symbol) => {
-    //     console.log('Fetching price from Alpha Vantage:', symbol);
-    //     try {
-    //         const API_KEY = 'ZFZ91EST7DF3HY7B';
-            
-    //         // For testing: Use mock data if we hit the rate limit
-    //         const mockPrices = {
-    //             'AAPL': 175.50,
-    //             'GOOGL': 142.65,
-    //             'MSFT': 420.45,
-    //             'AMZN': 178.25,
-    //             'TSLA': 185.30
-    //         };
-
-    //         const url = `https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=${symbol}&apikey=${API_KEY}`;
-    //         const response = await axios.get(url);
-            
-    //         if (response.data['Global Quote']) {
-    //             const price = response.data['Global Quote']['05. price'];
-    //             setMarketPrices(prev => ({
-    //                 ...prev,
-    //                 [symbol]: parseFloat(price)
-    //             }));
-    //         } else if (response.data.Information?.includes('rate limit')) {
-    //             // If we hit the rate limit, use mock data
-    //             console.log('Rate limit reached, using mock data');
-    //             setMarketPrices(prev => ({
-    //                 ...prev,
-    //                 [symbol]: mockPrices[symbol] || 100.00
-    //             }));
-    //         } else {
-    //             console.log('No price data in response, using mock data');
-    //             setMarketPrices(prev => ({
-    //                 ...prev,
-    //                 [symbol]: mockPrices[symbol] || 100.00
-    //             }));
-    //         }
-    //     } catch (error) {
-    //         console.error('Error fetching from Alpha Vantage:', error);
-    //         // Use mock data in case of error
-    //         setMarketPrices(prev => ({
-    //             ...prev,
-    //             [symbol]: mockPrices[symbol] || 100.00
-    //         }));
-    //     }
-    // };
-
-
-
     const fetchMarketPrice = async (symbol, retryCount = 0) => {
-        // Strip any exchange suffixes (like .MX)
         const baseSymbol = symbol.split('.')[0];
+        const FALLBACK_KEY = 'ctt0ephr01qin3c10ro0ctt0ephr01qin3c10rog';
         
-        console.log('Fetching price from Finnhub:', baseSymbol);
+        const usingKey = userApiKey || FALLBACK_KEY;
+        const isUsingFallback = !userApiKey;
+        setIsUsingFallbackKey(isUsingFallback);
+        
+        console.log(`Fetching price for ${baseSymbol} using ${isUsingFallback ? 'fallback' : 'user'} API key`);
+        
         try {
-            const FINNHUB_API_KEY = 'ctt0ephr01qin3c10ro0ctt0ephr01qin3c10rog';
-            const url = `https://finnhub.io/api/v1/quote?symbol=${baseSymbol}&token=${FINNHUB_API_KEY}`;
-            
-            // Add exponential backoff delay
-            if (retryCount > 0) {
-                const delay = Math.min(1000 * Math.pow(2, retryCount), 10000);
-                await new Promise(resolve => setTimeout(resolve, delay));
-            }
-            
+            const url = `https://finnhub.io/api/v1/quote?symbol=${baseSymbol}&token=${usingKey}`;
             const response = await axios.get(url);
             
             if (response.data && response.data.c) {
-                const price = response.data.c;
+                setIsApiValid(true);
                 setMarketPrices(prev => ({
                     ...prev,
-                    [symbol]: parseFloat(price)  // Keep original symbol in state
+                    [symbol]: parseFloat(response.data.c)
                 }));
             }
         } catch (error) {
-            if (error.response?.status === 429 && retryCount < 3) {
-                console.log(`Rate limited, retrying ${symbol} (attempt ${retryCount + 1})`);
-                return fetchMarketPrice(symbol, retryCount + 1);
+            if (error.response?.status === 403) {
+                setIsApiValid(false);
+                if (!isUsingFallback) {
+                    alert('Your API key appears to be invalid. Falling back to default key.');
+                    setUserApiKey(''); // Clear invalid user key
+                    // Retry with fallback key
+                    return fetchMarketPrice(symbol, retryCount);
+                }
             }
-            console.error('Error fetching from Finnhub:', error);
-            setMarketPrices(prev => ({
-                ...prev,
-                [symbol]: 0  // Default fallback price
-            }));
+            console.error('Error fetching price:', error);
         }
     };
 
@@ -146,7 +153,7 @@ function PortfolioList({ onPortfolioUpdate }){
             }
             
             try {
-                const FINNHUB_API_KEY = 'ctt0ephr01qin3c10ro0ctt0ephr01qin3c10rog';
+                const FINNHUB_API_KEY = userApiKey || 'ctt0ephr01qin3c10ro0ctt0ephr01qin3c10rog';
                 const url = `https://finnhub.io/api/v1/search?q=${query}&token=${FINNHUB_API_KEY}`;
                 const response = await axios.get(url);
                 
@@ -255,11 +262,21 @@ function PortfolioList({ onPortfolioUpdate }){
         return Number(returns) > 0 ? `+$${returns}` : `-$${Math.abs(returns)}`;
     };
 
-    const refreshPrices = () => {
+    const refreshPrices = async () => {
+        setIsRefreshing(true);
         console.log('Refresh clicked, fetching new prices...');
-        stockList.forEach(stock => {
-            fetchMarketPrice(stock.search);
-        });
+        
+        try {
+            for (const stock of stockList) {
+                await fetchMarketPrice(stock.search);
+                // Small delay between requests to avoid rate limiting
+                await new Promise(resolve => setTimeout(resolve, 200));
+            }
+        } catch (error) {
+            console.error('Error refreshing prices:', error);
+        } finally {
+            setIsRefreshing(false);
+        }
     };
 
     function handleSelectSuggestion(symbol, description) {
@@ -334,10 +351,43 @@ function PortfolioList({ onPortfolioUpdate }){
         fetchStocks();
     }, []);
 
+    const calculatePercentageReturn = (stock) => {
+        const marketPrice = marketPrices[stock.search];
+        if (!marketPrice) return 0;
+        return ((marketPrice - stock.buyPrice) / stock.buyPrice) * 100;
+    };
+
+    const getTopPerformer = () => {
+        if (stockList.length === 0) return null;
+        
+        // Filter stocks with positive returns first
+        const profitableStocks = stockList.filter(stock => {
+            const marketPrice = marketPrices[stock.search];
+            if (!marketPrice) return false;
+            return marketPrice > stock.buyPrice;
+        });
+
+        if (profitableStocks.length === 0) return null;
+
+        // Find the stock with highest return among profitable stocks
+        return profitableStocks.reduce((topStock, currentStock) => {
+            const topReturn = calculatePercentageReturn(topStock);
+            const currentReturn = calculatePercentageReturn(currentStock);
+            return currentReturn > topReturn ? currentStock : topStock;
+        }, profitableStocks[0]);
+    };
+
     return(
         <>
             <h1 id="yourinvestments">Your Investments ({stockList.length})</h1>
-            <button id="refreshportfolio" onClick={refreshPrices}>Refresh Positions ⟳</button>
+            <button 
+                id="refreshportfolio" 
+                onClick={refreshPrices}
+                disabled={isRefreshing}
+                className={isRefreshing ? 'refreshing' : ''}
+            >
+                Refresh Positions {isRefreshing ? '' : ''}
+            </button>
             <div id="addinvestment">
                 <div id="addinvestmentbar">
                     <div className="search-container">
@@ -379,17 +429,61 @@ function PortfolioList({ onPortfolioUpdate }){
 
             <div id="stocklist">
                 <div id="stocklist-head">
-                    <div id="top-performer">
-                        <p>TOP PERFORMER : INFOSYS (INFY)</p>
-                    </div>    
-                    
-                    {apiopen && <div id="askapi-hidden"><button onClick={ToggleApiOpen}>⚙️</button></div>}
-                    {!apiopen &&
-                    <div id="askapi">
-                        <input type="text" placeholder='ctt0ephr01qin3c10ro0ctt0ephr01qin3c10rog' onChange={handleApiKey} value={apiKey}/>
-                        <button onClick={ToggleApiOpen}>✅</button>
+                    <div id="top-performer" 
+                        style={{ 
+                            backgroundColor: isUsingFallbackKey ? 'var(--red-color)' : 'var(--green-color)',
+                            color: isUsingFallbackKey ? 'white' : 'var(--purple-color)'
+                        }}>
+                        {(() => {
+                            if (isUsingFallbackKey) {
+                                return <p>Please enter your <a title="Get Key" href="https://finnhub.io/register" target="_blank">Finnhub API key</a> 👉</p>;
+                            }
+                            
+                            if (stockList.length === 0) {
+                                return <p>TOP PERFORMER: No stocks in portfolio</p>;
+                            }
+                            
+                            const topStock = getTopPerformer();
+                            if (!topStock) {
+                                return <p>TOP PERFORMER: No profitable stocks</p>;
+                            }
+                            
+                            const returnPercentage = calculatePercentageReturn(topStock);
+                            return returnPercentage > 0 ? (
+                                <p>TOP PERFORMER: {topStock.companyName} ({topStock.search}) 
+                                    +{returnPercentage.toFixed(2)}%</p>
+                            ) : (
+                                <p>TOP PERFORMER: No profitable stocks</p>
+                            );
+                        })()}
                     </div>
-                    }
+                    
+                    <div id={apiopen ? 'askapi-hidden' : 'askapi'}>
+                        {!apiopen && (
+                            <>
+                                <input 
+                                    type="text" 
+                                    placeholder='Enter your Finnhub API key'
+                                    onChange={handleApiKey} 
+                                    value={apiKey}
+                                    style={{
+                                        borderColor: apiKeyStatus === 'valid' ? 'green' : 
+                                        apiKeyStatus === 'invalid' ? 'red' : 'initial'
+                                    }}
+                                />
+                                <button onClick={handleApiKeySave} title="Save API Key">
+                                    <span className="settings-icon">
+                                        {apiKeyStatus === 'valid' ? '💾' : '💾'}
+                                    </span>
+                                </button>
+                            </>
+                        )}
+                        <button onClick={ToggleApiOpen} title={apiopen ? "Open API Settings" : "Close API Settings"}>
+                            <span className={`settings-icon ${!apiopen ? 'rotate' : ''}`}>
+                                {apiopen ? '⚙️' : '✅'}
+                            </span>
+                        </button>
+                    </div>
                     
 
                 </div>
