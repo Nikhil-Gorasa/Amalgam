@@ -1,10 +1,22 @@
 [[headers]]
-  for = "/*"
+  for = "/*.js"
   [headers.values]
     Content-Type = "text/javascript"
-    Content-Security-Policy = "default-src 'self' https://amalgam.onrender.com https://finnhub.io; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data:;"
-    X-Frame-Options = "DENY"
-    X-Content-Type-Options = "nosniff"
+
+[[headers]]
+  for = "/*.css"
+  [headers.values]
+    Content-Type = "text/css"
+
+[[headers]]
+  for = "/*.html"
+  [headers.values]
+    Content-Type = "text/html"
+
+[[headers]]
+  for = "/assets/*"
+  [headers.values]
+    Content-Type = "application/javascript"
 
 [[redirects]]
   from = "/*"
@@ -15,8 +27,7 @@
 [build]
   command = "npm run build"
   publish = "dist"
-  base = "/"
 
 [build.environment]
   NODE_VERSION = "20"
-  NPM_VERSION = "10" 
+  NPM_FLAGS = "--legacy-peer-deps" 
