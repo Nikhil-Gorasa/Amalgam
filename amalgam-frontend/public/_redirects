@@ -1,7 +1,0 @@
-#### 3. Configure Netlify Redirects
-
-Create a `_redirects` file in the `public` directory to handle routing for single-page applications.
-
-Add the following content to handle routing:
-
-/*    /index.html   200

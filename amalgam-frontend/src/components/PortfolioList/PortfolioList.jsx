@@ -2,6 +2,7 @@ import './PortfolioList.css';
 import React,{useState, useEffect, useCallback} from 'react';
 import axios from 'axios';
 import PropTypes from 'prop-types';
+import { API_BASE_URL } from '../../config/config';
 
 function PortfolioList({ onPortfolioUpdate }){
 
@@ -42,7 +43,7 @@ function PortfolioList({ onPortfolioUpdate }){
             if (testResponse.data && testResponse.data.c) {
                 // Key is valid, save it
                 const user = JSON.parse(localStorage.getItem('user'));
-                await axios.post(`http://localhost:8080/api/users/${user.id}/finnhub-key`, {
+                await axios.post(`${API_BASE_URL}/api/users/${user.id}/finnhub-key`, {
                     finnhubKey: apiKey
                 });
                 
@@ -75,7 +76,7 @@ function PortfolioList({ onPortfolioUpdate }){
         async function loadApiKey() {
             try {
                 const user = JSON.parse(localStorage.getItem('user'));
-                const response = await axios.get(`http://localhost:8080/api/users/${user.id}/finnhub-key`);
+                const response = await axios.get(`${API_BASE_URL}/api/users/${user.id}/finnhub-key`);
                 if (response.data.finnhubKey) {
                     setUserApiKey(response.data.finnhubKey);
                     setApiKey(response.data.finnhubKey);
@@ -200,7 +201,7 @@ function PortfolioList({ onPortfolioUpdate }){
             const selectedSuggestion = searchSuggestions.find(s => s.symbol === search.toUpperCase());
             
             // Save to backend
-            const response = await axios.post('http://localhost:8080/api/stocks', {
+            const response = await axios.post(`${API_BASE_URL}/api/stocks`, {
                 userId: user.id,
                 name: selectedCompanyName || selectedSuggestion?.description || search.toUpperCase(),
                 ticker: search.toUpperCase(),
@@ -241,7 +242,7 @@ function PortfolioList({ onPortfolioUpdate }){
                 return;
             }
             
-            await axios.delete(`http://localhost:8080/api/stocks/${stockToRemove.id}`, {
+            await axios.delete(`${API_BASE_URL}/api/stocks/${stockToRemove.id}`, {
                 data: { 
                     userId: Number(user.id)
                 }
@@ -320,7 +321,7 @@ function PortfolioList({ onPortfolioUpdate }){
         const fetchStocks = async () => {
             try {
                 const user = JSON.parse(localStorage.getItem('user'));
-                const response = await axios.get(`http://localhost:8080/api/stocks/user/${user.id}`);
+                const response = await axios.get(`${API_BASE_URL}/api/stocks/user/${user.id}`);
                 
                 console.log('Backend response:', response.data); // Debug log
                 
