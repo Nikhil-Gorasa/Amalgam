@@ -1,5 +1,5 @@
 [build]
-builder = "JAVA"
+builder = "NIXPACKS"
 buildCommand = "chmod +x mvnw && ./mvnw clean package -DskipTests"
 
 [deploy]
