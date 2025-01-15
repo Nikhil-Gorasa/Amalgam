@@ -1,0 +1,23 @@
+services:
+  - type: web
+    name: amalgam-portfolio-backend
+    runtime: docker
+    plan: free
+    buildCommand: ./mvnw clean package -DskipTests
+    startCommand: java -jar target/*.jar
+    envVars:
+      - key: MYSQL_URL
+        value: ${MYSQL_URL}
+      - key: MYSQL_USER
+        value: ${MYSQLUSER}
+      - key: MYSQL_PASSWORD
+        value: ${MYSQLPASSWORD}
+      - key: ALLOWED_ORIGINS
+        value: https://amalgam-finance.netlify.app
+    healthCheckPath: /
+    autoDeploy: true
+
+databases:
+  - name: amalgam_db
+    databaseName: amalgam
+    plan: free 
