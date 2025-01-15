@@ -1,6 +1,6 @@
 [build]
 builder = "NIXPACKS"
-buildCommand = "chmod +x mvnw && JAVA_HOME=/usr/lib/jvm/java-21-openjdk ./mvnw clean package -DskipTests -X"
+buildCommand = "chmod +x mvnw && ./mvnw clean package -DskipTests -X"
 
 [deploy]
 startCommand = "java -jar target/*.jar"
@@ -8,4 +8,5 @@ restartPolicyType = "ON_FAILURE"
 
 [env]
 JAVA_OPTS = "-XX:+UseContainerSupport -XX:MaxRAMPercentage=75"
-NIXPACKS_JDK_VERSION = "21" 
+NIXPACKS_JDK_VERSION = "21"
+NIXPACKS_JAVA_VERSION = "21" 
