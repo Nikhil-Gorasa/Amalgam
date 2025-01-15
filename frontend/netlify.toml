@@ -1,31 +1,31 @@
 [[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "DENY"
+    X-Content-Type-Options = "nosniff"
+
+[[headers]]
   for = "/*.js"
   [headers.values]
-    Content-Type = "text/javascript"
+    Content-Type = "application/javascript;charset=utf-8"
+
+[[headers]]
+  for = "/*.mjs"
+  [headers.values]
+    Content-Type = "application/javascript;charset=utf-8"
 
 [[headers]]
   for = "/*.css"
   [headers.values]
-    Content-Type = "text/css"
-
-[[headers]]
-  for = "/*.html"
-  [headers.values]
-    Content-Type = "text/html"
-
-[[headers]]
-  for = "/assets/*"
-  [headers.values]
-    Content-Type = "application/javascript"
+    Content-Type = "text/css;charset=utf-8"
 
 [[redirects]]
   from = "/*"
   to = "/index.html"
   status = 200
-  force = true
 
 [build]
-  command = "npm run build"
+  command = "CI=false npm run build"
   publish = "dist"
 
 [build.environment]
