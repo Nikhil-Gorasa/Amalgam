@@ -1,6 +1,6 @@
 [build]
-builder = "NIXPACKS"
-buildCommand = "./mvnw clean install -DskipTests"
+builder = "JAVA"
+buildCommand = "chmod +x mvnw && ./mvnw clean package -DskipTests"
 
 [deploy]
 startCommand = "java -jar target/*.jar"
