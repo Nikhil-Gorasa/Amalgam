@@ -2,6 +2,9 @@
 FROM amazoncorretto:21-alpine as build
 WORKDIR /app
 
+# Install Maven
+RUN apk add --no-cache maven
+
 # Copy pom.xml first for better caching
 COPY pom.xml .
 COPY .mvn .mvn
@@ -10,7 +13,7 @@ COPY src src
 
 # Fix permissions and build
 RUN chmod +x mvnw && \
-    ./mvnw clean package -DskipTests
+    mvn clean package -DskipTests
 
 # Run stage
 FROM amazoncorretto:21-alpine
