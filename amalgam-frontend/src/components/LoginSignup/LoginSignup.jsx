@@ -4,6 +4,7 @@ import {useState} from 'react';
 import Navbar from '../Navbar/Navbar';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import { API_BASE_URL } from '../../config/config';
 
 function LoginSignup(){
 
@@ -44,7 +45,7 @@ function LoginSignup(){
                     return;
                 }
                 
-                const response = await axios.post('http://localhost:8080/api/users/login', {
+                const response = await axios.post(`${API_BASE_URL}/api/users/login`, {
                     username,
                     password
                 });
@@ -62,7 +63,7 @@ function LoginSignup(){
                     return;
                 }
                 
-                const response = await axios.post('http://localhost:8080/api/users/register', {
+                const response = await axios.post(`${API_BASE_URL}/api/users/register`, {
                     username,
                     email,
                     password
