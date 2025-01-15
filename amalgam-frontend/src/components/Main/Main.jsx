@@ -1,7 +1,6 @@
 import React,{useState,useEffect} from 'react';
 import './Main.css';
 import Navbar from '../Navbar/Navbar.jsx';
-import Footer from '../Footer/Footer.jsx';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';import PortfolioList from '../PortfolioList/PortfolioList.jsx';
 
 function Main(){
@@ -12,19 +11,8 @@ function Main(){
         totalCurrentValue: '0.00',
         totalReturns: '0.00'
     });
-    const [chartData, setChartData] = useState(() => {
-        const last7Days = [];
-        for (let i = 6; i >= 0; i--) {
-            const date = new Date();
-            date.setDate(date.getDate() - i);
-            last7Days.push({
-                date: date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
-                value: 0,
-                timestamp: date.getTime()
-            });
-        }
-        return last7Days;
-    });
+    const [chartData, setChartData] = useState([]);
+    const [initialLoadComplete, setInitialLoadComplete] = useState(false);
 
     const checkMarketStatus = (marketType) => {
         const now = new Date();
@@ -63,31 +51,84 @@ function Main(){
         return () => clearInterval(interval);
     }, []);
 
+    // Effect to populate initial 7 seconds of data ONLY on first load
     useEffect(() => {
-        // Update chart data whenever portfolio value changes, including when it's 0
-        const now = new Date();
-        const todayStr = now.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-        
-        setChartData(prevData => {
-            const todayExists = prevData.find(item => item.date === todayStr);
+        if (!initialLoadComplete) {
+            let count = 0;
+            const currentValue = parseFloat(portfolioData.totalCurrentValue);
+            console.log("Initial value:", currentValue); // Debug log
             
-            if (todayExists) {
-                return prevData.map(item => 
-                    item.date === todayStr 
-                        ? { ...item, value: parseFloat(portfolioData.totalCurrentValue) }
-                        : item
-                );
-            } else {
-                const newData = [...prevData.slice(1)];
-                newData.push({
-                    date: todayStr,
-                    value: parseFloat(portfolioData.totalCurrentValue),
-                    timestamp: now.getTime()
-                });
-                return newData;
+            // Only start if we have a valid value
+            if (currentValue > 0) {
+                // Function to add a new data point
+                const addDataPoint = () => {
+                    const now = new Date();
+                    setChartData(prevData => {
+                        const newData = [...(prevData || []), {
+                            point: now.toLocaleTimeString('en-US', { 
+                                hour: '2-digit', 
+                                minute: '2-digit',
+                                second: '2-digit'
+                            }),
+                            value: currentValue // Use the captured current value
+                        }];
+                        
+                        console.log("Adding point with value:", currentValue); // Debug log
+                        return newData.slice(-7);
+                    });
+                };
+
+                // Add initial point immediately
+                addDataPoint();
+
+                // Add a point every second for 6 more seconds
+                const intervalId = setInterval(() => {
+                    count++;
+                    addDataPoint();
+                    
+                    // Stop after 6 more points (total 7 points)
+                    if (count >= 6) {
+                        clearInterval(intervalId);
+                        setInitialLoadComplete(true);
+                    }
+                }, 1000);
+
+                return () => clearInterval(intervalId);
             }
-        });
-    }, [portfolioData.totalCurrentValue]); // This will now trigger even when value is "0.00"
+        }
+    }, [portfolioData.totalCurrentValue]); // Watch for portfolio value changes
+
+    // Normal update effect for portfolio changes
+    useEffect(() => {
+        if (initialLoadComplete) {
+            const currentValue = parseFloat(portfolioData.totalCurrentValue);
+            console.log("Update value:", currentValue); // Debug log
+
+            if (currentValue > 0) {
+                const timeoutId = setTimeout(() => {
+                    setChartData(prevData => {
+                        const now = new Date();
+                        const newData = [...prevData.slice(1), {
+                            point: now.toLocaleTimeString('en-US', { 
+                                hour: '2-digit', 
+                                minute: '2-digit',
+                                second: '2-digit'
+                            }),
+                            value: currentValue
+                        }];
+                        return newData;
+                    });
+                }, 500);
+
+                return () => clearTimeout(timeoutId);
+            }
+        }
+    }, [portfolioData.totalCurrentValue, initialLoadComplete]);
+
+    // Calculate fixed Y-axis domain
+    const yMax = Math.max(...chartData.map(item => item.value)) || 100;
+    const yMin = Math.min(...chartData.map(item => item.value)) || 0;
+    const yDomain = [0, Math.ceil(yMax * 1.1)];
 
     const handlePortfolioUpdate = (data) => {
         setPortfolioData(data);
@@ -141,17 +182,37 @@ function Main(){
                         <h1>Portfolio Growth</h1>
                         <div id="chart">
                             <ResponsiveContainer width="100%" height={200}>
-                                <LineChart data={chartData}>
+                                <LineChart data={chartData} margin={{ top: 10, right: 30, left: 30, bottom: 10 }}>
                                     <CartesianGrid strokeDasharray="3 3" />
                                     <XAxis 
-                                        dataKey="date"
-                                        tick={{ fill: 'var(--green-color)' }}
+                                        dataKey="point"
+                                        tick={{ 
+                                            fill: 'var(--green-color)',
+                                            fontSize: 10  // Smaller font size for time labels
+                                        }}
+                                        label={{ 
+                                            position: 'bottom', 
+                                            fill: 'var(--green-color)',
+                                            offset: 0
+                                        }}
                                     />
                                     <YAxis 
-                                        tick={{ color: 'var(--green-color)' }}
+                                        domain={yDomain}
+                                        tick={{ fill: 'var(--green-color)' }}
+                                        tickCount={5}
+                                        tickFormatter={(value) => `$${value}`}
                                     />
                                     <Tooltip 
-                                        formatter={(value) => [`$${parseFloat(value).toLocaleString()}`, 'Portfolio Value']}
+                                        formatter={(value) => [`$${parseFloat(value).toFixed(2)}`, 'Portfolio Value']}
+                                        contentStyle={{
+                                            backgroundColor: 'var(--green-color)',
+                                            border: 'none',
+                                            borderRadius: '5px',
+                                            color: 'var(--green-color)'
+                                        }}
+                                        labelStyle={{
+                                            color: 'white'
+                                        }}
                                     />
                                     <Legend />
                                     <Line 
@@ -162,6 +223,9 @@ function Main(){
                                         dot={{ fill: 'var(--green-color)', r: 4 }}
                                         activeDot={{ r: 8 }}
                                         name="Portfolio Value"
+                                        isAnimationActive={true}
+                                        animationDuration={500}
+                                        connectNulls={true}
                                     />
                                 </LineChart>
                             </ResponsiveContainer>

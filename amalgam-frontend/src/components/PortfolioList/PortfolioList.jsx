@@ -218,11 +218,22 @@ function PortfolioList({ onPortfolioUpdate }){
             };
             
             setStockList([...stockList, newStock]);
+            
+            // Reset all form fields
             setSearch('');
             setSelectedCompanyName('');
             setBuyQuantity('');
             setBuyPrice('');
             setSearchSuggestions([]);
+            
+            // Update portfolio data
+            const updatedPortfolioData = {
+                totalInvestment: calculateTotalInvestment(),
+                totalCurrentValue: calculateTotalCurrentValue(),
+                totalReturns: calculateTotalReturns()
+            };
+            onPortfolioUpdate(updatedPortfolioData);
+            
         } catch (error) {
             console.error('Error adding stock:', error);
         }
@@ -247,7 +258,14 @@ function PortfolioList({ onPortfolioUpdate }){
                 }
             });
             
-            setStockList(prevStocks => prevStocks.filter((_, i) => i !== index));
+            setStockList(prevList => {
+                const newList = prevList.filter((_, i) => i !== index);
+                // Use setTimeout to ensure state is updated
+                setTimeout(() => {
+                    updatePortfolioData();
+                }, 0);
+                return newList;
+            });
             
         } catch (error) {
             console.error('Error removing stock:', error);
@@ -264,14 +282,12 @@ function PortfolioList({ onPortfolioUpdate }){
 
     const refreshPrices = async () => {
         setIsRefreshing(true);
-        console.log('Refresh clicked, fetching new prices...');
-        
         try {
             for (const stock of stockList) {
                 await fetchMarketPrice(stock.search);
-                // Small delay between requests to avoid rate limiting
                 await new Promise(resolve => setTimeout(resolve, 200));
             }
+            updatePortfolioData();
         } catch (error) {
             console.error('Error refreshing prices:', error);
         } finally {
@@ -288,17 +304,15 @@ function PortfolioList({ onPortfolioUpdate }){
 
     const calculateTotalInvestment = () => {
         return stockList.reduce((total, stock) => {
-            const investedAmount = stock.buyQuantity * stock.buyPrice;
-            return total + investedAmount;
-        }, 0).toFixed(2);
+            return total + (stock.buyQuantity * stock.buyPrice);
+        }, 0);
     };
 
     const calculateTotalCurrentValue = () => {
         return stockList.reduce((total, stock) => {
             const currentPrice = marketPrices[stock.search] || stock.buyPrice;
-            const currentValue = stock.buyQuantity * currentPrice;
-            return total + currentValue;
-        }, 0).toFixed(2);
+            return total + (stock.buyQuantity * currentPrice);
+        }, 0);
     };
 
     const calculateTotalReturns = () => {
@@ -307,14 +321,20 @@ function PortfolioList({ onPortfolioUpdate }){
         return (totalCurrent - totalInvestment).toFixed(2);
     };
 
-    useEffect(() => {
+    const updatePortfolioData = () => {
+        const totalInvestment = calculateTotalInvestment();
+        const totalCurrentValue = calculateTotalCurrentValue();
+        const totalReturns = (totalCurrentValue - totalInvestment).toFixed(2);
+        
         const portfolioData = {
-            totalInvestment: calculateTotalInvestment(),
-            totalCurrentValue: calculateTotalCurrentValue(),
-            totalReturns: calculateTotalReturns()
+            totalInvestment: totalInvestment.toFixed(2),
+            totalCurrentValue: totalCurrentValue.toFixed(2),
+            totalReturns: totalReturns
         };
+        
+        console.log("PortfolioList: Updating portfolio with:", portfolioData);
         onPortfolioUpdate(portfolioData);
-    }, [stockList, marketPrices]);
+    };
 
     useEffect(() => {
         const fetchStocks = async () => {
@@ -376,6 +396,13 @@ function PortfolioList({ onPortfolioUpdate }){
             return currentReturn > topReturn ? currentStock : topStock;
         }, profitableStocks[0]);
     };
+
+    // Add an effect to update portfolio data when stockList or marketPrices change
+    useEffect(() => {
+        if (stockList.length > 0) {
+            updatePortfolioData();
+        }
+    }, [stockList, marketPrices]);
 
     return(
         <>
@@ -462,7 +489,7 @@ function PortfolioList({ onPortfolioUpdate }){
                         {!apiopen && (
                             <>
                                 <input 
-                                    type="text" 
+                                    type="password" 
                                     placeholder='Enter your Finnhub API key'
                                     onChange={handleApiKey} 
                                     value={apiKey}
