@@ -259,7 +259,7 @@ input{
 }
 
 #askapi {
-    width: 60%;
+    width: 60%; /* Adjust based on your needs */
 }
 
 #askapi-hidden {
