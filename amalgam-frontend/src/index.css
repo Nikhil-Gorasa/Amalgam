@@ -1,0 +1,39 @@
+:root {
+  font-family: Poppins,Helvetica, Arial, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+
+  color-scheme: light dark;
+  color: rgba(255, 255, 255, 0.87);
+  --primary-color: #1B1A20;
+  --purple-color: #392381;
+  --lightpurple-color: #5738a3;
+  --white-color: #F5F5F5;
+  --secondary-color: #242424;
+  --accent-color: #000000;
+  --green-color: #14AE5C;
+  --lightgreen-color: #1add75;
+  --red-color: #E7191F;
+  --lightred-color: #ff4d4d;
+  --blue-color: #0000FF;
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+*{
+  border:0px;
+  margin:0px;
+  padding:0px;
+}
+
+body{
+  min-height: 100vh;
+}
+
+/* Custom scrollbar styles */
+::-webkit-scrollbar {
+  width: 0px;
+}
